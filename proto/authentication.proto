@@ -33,8 +33,6 @@ message SignOutResponse {
   StatusCode statusCode = 1;
 }
 
-
-
 enum StatusCode {
   FAILURE = 0;
   SUCCESS = 1;
