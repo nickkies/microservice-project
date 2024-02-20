@@ -9,7 +9,7 @@ pub struct SessionsImpl {
     uuid_to_ssession: HashMap<String, String>,
 }
 
-impl Sessions for SessionImpl {
+impl Sessions for SessionsImpl {
     fn create_session(&mut self, user_uuid: &str) -> String {
         todo!();
     }

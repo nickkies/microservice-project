@@ -4,9 +4,9 @@ use tonic::{Request, Response, Status};
 
 use crate::{sessions::Sessions, users::Users};
 
+use authentication::auth_server::Auth;
 use authentication::{
     SignInRequest, SignInResponse, SignOutRequest, SignOutResponse, SignUpRequest, SignUpResponse,
-    StatusCode,
 };
 
 pub mod authentication {
@@ -20,8 +20,8 @@ pub struct AuthService {
 
 impl AuthService {
     pub fn new(
-        users_service: Box<Mutex<Users + Send + Sync>>,
-        sessions_service: Box<Mutex<Sessions + Send + Sync>>,
+        users_service: Box<Mutex<dyn Users + Send + Sync>>,
+        sessions_service: Box<Mutex<dyn Sessions + Send + Sync>>,
     ) -> Self {
         Self {
             users_service,
@@ -30,16 +30,23 @@ impl AuthService {
     }
 }
 
+#[tonic::async_trait]
 impl Auth for AuthService {
-    fn sign_in(&self, request: Request<SignInRequest>) -> Result<Response<SignInResponse>, Status> {
+    async fn sign_in(
+        &self,
+        request: Request<SignInRequest>,
+    ) -> Result<Response<SignInResponse>, Status> {
         todo!();
     }
 
-    fn sign_up(&self, request: Request<SignUpRequest>) -> Result<Response<SignUpResponse>, Status> {
+    async fn sign_up(
+        &self,
+        request: Request<SignUpRequest>,
+    ) -> Result<Response<SignUpResponse>, Status> {
         todo!();
     }
 
-    fn sign_out(
+    async fn sign_out(
         &self,
         request: Request<SignOutRequest>,
     ) -> Result<Response<SignOutResponse>, Status> {
