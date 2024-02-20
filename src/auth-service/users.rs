@@ -99,4 +99,16 @@ mod tests {
             .get_user_uuid("username".to_string(), "incorrect password".to_string())
             .is_none());
     }
+
+    #[test]
+    fn should_retrieve_user_uuid() {
+        let mut service = UsersImpl::default();
+        service
+            .create_user("username".to_string(), "password".to_string())
+            .expect("should create user");
+
+        assert!(service
+            .get_user_uuid("username".to_string(), "password".to_string())
+            .is_some());
+    }
 }
