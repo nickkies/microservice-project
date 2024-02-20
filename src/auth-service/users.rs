@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use pbkdf2::{
-    password_hash::{PasswordHasher, SaltString},
+    password_hash::{PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Pbkdf2,
 };
 use rand_core::OsRng;
@@ -52,7 +52,18 @@ impl Users for UsersImpl {
     }
 
     fn get_user_uuid(&self, username: String, password: String) -> Option<String> {
-        todo!();
+        let user = self.username_to_user.get(&username)?;
+
+        let hashed_password = user.password.clone();
+        let parsed_hash = PasswordHash::new(&hashed_password).ok()?;
+
+        let result = Pbkdf2.verify_password(password.as_bytes(), &parsed_hash);
+
+        if user.username == username && result.is_ok() {
+            return Some(user.user_uuid.clone());
+        }
+
+        None
     }
 
     fn delete_user(&mut self, user_uuid: String) {
