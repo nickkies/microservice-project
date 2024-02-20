@@ -122,4 +122,21 @@ mod tests {
             .get_user_uuid("username".to_string(), "password".to_string())
             .is_some());
     }
+
+    #[test]
+    fn should_delete_user() {
+        let mut service = UsersImpl::default();
+        service
+            .create_user("username".to_string(), "password".to_string())
+            .expect("should create user");
+
+        let user_uuid = service
+            .get_user_uuid("username".to_string(), "password".to_string())
+            .unwrap();
+
+        service.delete_user(user_uuid);
+
+        assert_eq!(service.uuid_to_user.len(), 0);
+        assert_eq!(service.username_to_user.len(), 0);
+    }
 }
