@@ -67,7 +67,11 @@ impl Users for UsersImpl {
     }
 
     fn delete_user(&mut self, user_uuid: String) {
-        todo!();
+        if let Some(user) = self.uuid_to_user.get(&user_uuid) {
+            let user_uuid = user.user_uuid.clone();
+            self.username_to_user.remove(&user.username);
+            self.uuid_to_user.remove(&user_uuid);
+        }
     }
 }
 
