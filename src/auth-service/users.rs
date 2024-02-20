@@ -87,4 +87,16 @@ mod tests {
 
         assert!(result.is_err());
     }
+
+    #[test]
+    fn should_fail_to_retrieve_user_uuid_with_incorrect_password() {
+        let mut service = UsersImpl::default();
+        service
+            .create_user("username".to_string(), "password".to_string())
+            .expect("should create user");
+
+        assert!(service
+            .get_user_uuid("username".to_string(), "incorrect password".to_string())
+            .is_none());
+    }
 }
