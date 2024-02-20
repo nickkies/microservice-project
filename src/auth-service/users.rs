@@ -47,4 +47,16 @@ mod tests {
             .get_user_uuid("username".to_string(), "password".to_string())
             .is_some());
     }
+
+    #[test]
+    fn should_fail_creating_user_with_existing_username() {
+        let mut service = UsersImpl::default();
+        service
+            .create_user("username".to_string(), "password".to_string())
+            .expect("should create user");
+
+        let result = service.create_user("username".to_string(), "password".to_string());
+
+        assert!(result.is_err());
+    }
 }
