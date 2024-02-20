@@ -12,12 +12,13 @@ pub struct User {
     password: String,
 }
 
-pub struct UserImpl {
+#[derive(Default)]
+pub struct UsersImpl {
     uuid_to_user: HashMap<String, User>,
     username_to_user: HashMap<String, User>,
 }
 
-impl Users for UserImpl {
+impl Users for UsersImpl {
     fn create_user(&mut self, username: String, password: String) -> Result<(), String> {
         todo!();
     }
@@ -28,5 +29,22 @@ impl Users for UserImpl {
 
     fn delete_user(&mut self, user_uuid: String) {
         todo!();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn should_create_user() {
+        let mut service = UsersImpl::default();
+        service
+            .create_user("username".to_string(), "password".to_string())
+            .expect("should create user");
+
+        assert!(service
+            .get_user_uuid("username".to_string(), "password".to_string())
+            .is_some());
     }
 }
