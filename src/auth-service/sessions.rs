@@ -1,8 +1,10 @@
 use std::collections::HashMap;
 
+use uuid::Uuid;
+
 pub trait Sessions {
     fn create_session(&mut self, user_uuid: &str) -> String;
-    fn delete_session(&mut self, user_uuid: &str) -> String;
+    fn delete_session(&mut self, user_uuid: &str);
 }
 
 #[derive(Default)]
@@ -12,11 +14,14 @@ pub struct SessionsImpl {
 
 impl Sessions for SessionsImpl {
     fn create_session(&mut self, user_uuid: &str) -> String {
-        todo!();
+        let session = Uuid::new_v4().to_string();
+        self.uuid_to_ssession
+            .insert(user_uuid.to_string(), session.clone());
+        session
     }
 
-    fn delete_session(&mut self, user_uuid: &str) -> String {
-        todo!();
+    fn delete_session(&mut self, user_uuid: &str) {
+        self.uuid_to_ssession.remove(user_uuid);
     }
 }
 
