@@ -199,4 +199,19 @@ mod tests {
 
         assert_eq!(result.status_code, StatusCode::Success.into());
     }
+
+    #[tokio::test]
+    async fn sign_out_should_succeed() {
+        let users_service = Box::new(Mutex::new(UsersImpl::default()));
+        let sessions_service = Box::new(Mutex::new(SessionsImpl::default()));
+        let auth_service = AuthService::new(users_service, sessions_service);
+
+        let request = tonic::Request::new(SignOutRequest {
+            session_token: "".to_string(),
+        });
+
+        let result = auth_service.sign_out(request).await.unwrap().into_inner();
+
+        assert_eq!(result.status_code, StatusCode::Success.into());
+    }
 }
