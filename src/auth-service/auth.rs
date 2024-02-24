@@ -37,7 +37,42 @@ impl Auth for AuthService {
         &self,
         request: Request<SignInRequest>,
     ) -> Result<Response<SignInResponse>, Status> {
-        todo!();
+        println!("Got request: {request:?}");
+
+        let req = request.into_inner();
+
+        let result = self
+            .users_service
+            .lock()
+            .expect("lock should not be poisoned")
+            .get_user_uuid(req.username, req.password);
+
+        let user_uuid = match result {
+            Some(uuid) => uuid,
+            None => {
+                let reply = SignInResponse {
+                    status_code: StatusCode::Failure.into(),
+                    user_uuid: "".to_string(),
+                    session_token: "".to_string(),
+                };
+
+                return Ok(Response::new(reply));
+            }
+        };
+
+        let session_token = self
+            .sessions_service
+            .lock()
+            .expect("lock should not be poisoned")
+            .create_session(&user_uuid);
+
+        let reply = SignInResponse {
+            status_code: StatusCode::Success.into(),
+            user_uuid,
+            session_token,
+        };
+
+        Ok(Response::new(reply))
     }
 
     async fn sign_up(
