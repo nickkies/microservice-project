@@ -23,6 +23,8 @@ message SignInRequest {
 
 message SignInResponse {
   StatusCode statusCode = 1;
+  string userUuid = 2;
+  string sessionToken = 3;
 }
 
 message SignOutRequest {
