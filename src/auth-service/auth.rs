@@ -153,4 +153,21 @@ mod tests {
         assert!(!result.user_uuid.is_empty());
         assert!(!result.session_token.is_empty());
     }
+
+    #[tokio::test]
+    async fn sign_up_should_fail_if_username_exists() {
+        let (username, password) = ("username".to_string(), "password".to_string());
+        let mut users_service = UsersImpl::default();
+        let _ = users_service.create_user(username.clone(), password.clone());
+
+        let users_service = Box::new(Mutex::new(users_service));
+        let sessions_service = Box::new(Mutex::new(SessionsImpl::default()));
+        let auth_service = AuthService::new(users_service, sessions_service);
+
+        let request = tonic::Request::new(SignUpRequest { username, password });
+
+        let result = auth_service.sign_up(request).await.unwrap().into_inner();
+
+        assert_eq!(result.status_code, StatusCode::Failure.into());
+    }
 }
