@@ -50,13 +50,11 @@ impl Auth for AuthService {
         let user_uuid = match result {
             Some(uuid) => uuid,
             None => {
-                let reply = SignInResponse {
+                return Ok(Response::new(SignInResponse {
                     status_code: StatusCode::Failure.into(),
                     user_uuid: "".to_string(),
                     session_token: "".to_string(),
-                };
-
-                return Ok(Response::new(reply));
+                }));
             }
         };
 
@@ -66,20 +64,35 @@ impl Auth for AuthService {
             .expect("lock should not be poisoned")
             .create_session(&user_uuid);
 
-        let reply = SignInResponse {
+        Ok(Response::new(SignInResponse {
             status_code: StatusCode::Success.into(),
             user_uuid,
             session_token,
-        };
-
-        Ok(Response::new(reply))
+        }))
     }
 
     async fn sign_up(
         &self,
         request: Request<SignUpRequest>,
     ) -> Result<Response<SignUpResponse>, Status> {
-        todo!();
+        println!("Got request: {request:?}");
+
+        let req = request.into_inner();
+
+        let result = self
+            .users_service
+            .lock()
+            .expect("lock should not be poisoned")
+            .create_user(req.username, req.password);
+
+        match result {
+            Ok(_) => Ok(Response::new(SignUpResponse {
+                status_code: StatusCode::Success.into(),
+            })),
+            Err(_) => Ok(Response::new(SignUpResponse {
+                status_code: StatusCode::Failure.into(),
+            })),
+        }
     }
 
     async fn sign_out(
