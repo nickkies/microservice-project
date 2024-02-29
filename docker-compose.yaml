@@ -1,0 +1,19 @@
+version: '2.23.3'
+services:
+  health-check:
+    image: opqudk/health-check
+    build:
+      context: .
+      dockerfile: Dockerfile-health
+    restart: 'always'
+    depends_on:
+      auth:
+        condition: service_started
+  auth:
+    image: opqudk/auth
+    build:
+      context: .
+      dockerfile: Dockerfile-auth
+    restart: 'always'
+    ports:
+      - '50051:50051'
