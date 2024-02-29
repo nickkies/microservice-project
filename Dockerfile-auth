@@ -1,8 +1,10 @@
-FROM rust:1.76.0 AS chef
+FROM rust:1.76.0-slim-buster AS chef
 USER root
 # remove the line below when switching to >=rust:1.70.0. sparse mode is planned to be the default in Rust 1.70.0
 # ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
-RUN apt-get update && apt-get install -y musl-dev && cargo install cargo-chef
+RUN apt-get update && \
+    apt-get install -y musl-dev && \
+    cargo install cargo-chef
 WORKDIR /microservice-project
 
 FROM chef AS planner
@@ -19,7 +21,7 @@ COPY . .
 RUN cargo build --release --bin auth
 
 # We do not need the Rust toolchain to run the binary!
-FROM debian:bullseye-slim AS runtime
+FROM debian:buster-slim AS runtime
 WORKDIR /microservice-project
 COPY --from=builder /microservice-project/target/release/auth /usr/local/bin
 ENTRYPOINT ["/usr/local/bin/auth"]
